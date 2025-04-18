@@ -111,7 +111,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param array $data Additional data to be sent stored as user metadata
      * @return void
      */
-    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): array|object|null
+    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []):AuthResponse | AuthError
     {
         $fields = [
             'phone' => $phone,
@@ -120,7 +120,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', $fields , null);
+        return $this->doPostRequest('signup', $fields , $this->authTranformerCallable);
     }
 
     /**
