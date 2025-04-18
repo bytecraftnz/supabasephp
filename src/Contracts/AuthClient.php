@@ -11,7 +11,7 @@ interface AuthClient
 
     public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError;
 
-public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): array|object|null;
+    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): array|object|null;
 
     public function signInWithEmailAndPassword(string $email, string $password): array|object|null;
 
@@ -38,4 +38,7 @@ public function signUpWithPhoneAndPassword(string $phone, string $password, arra
     public function updateUserEmail( String $bearerToken, String $email ): array|object|null;  
     
     public function isAuthenticated(string $bearerUserToken) : bool;
+
+    public function isError($o):bool;
+    public function getError(): string;
 }
