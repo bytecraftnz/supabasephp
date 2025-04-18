@@ -117,7 +117,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('token?grant_type=password', ['body' => $fields], null);
+        return $this->doPostRequest('signup', ['body' => $fields], null);
     }
 
     /**
