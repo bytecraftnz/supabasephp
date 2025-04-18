@@ -2,7 +2,6 @@
 
 namespace Bytecraftnz\SupabasePhp\Laravel;
 
-use Bytecraftnz\SupabasePhp\Contracts\AdminClient;
 
 class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -33,13 +32,14 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
 
     private function registerClass()
     {
-        $this->app->singleton(AdminClient::class, function ($app) {
+
+        $this->app->singleton(\Bytecraftnz\SupabasePhp\Contracts\AdminClient::class, function ($app) {
             $config = $app->make('config')->get('supaval');
 
             return new \Bytecraftnz\SupabasePhp\AdminClient(
-                $config['url'],
-                $config['key'],
-                $config['service_key']
+                $config['supabase_url'],
+                $config['api_key'],
+                $config['service_role_key']
             );
         });
 
@@ -47,8 +47,8 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
             $config = $app->make('config')->get('supaval');
 
             return new \Bytecraftnz\SupabasePhp\AuthClient(
-                $config['url'],
-                $config['key']
+                $config['supabase_url'],
+                $config['api_key']
             );
         });
 
