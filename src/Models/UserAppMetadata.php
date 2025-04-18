@@ -11,7 +11,7 @@ class UserAppMetadata{
         object $data
     ) {
         $this->provider = $data->provider ?? '';
-        $this->providers = (array) $data->data ?? [];
+        $this->providers = (array) $data->providers ?? [];
     }
     public function getProvider(): string
     {
