@@ -110,24 +110,24 @@ abstract class Supabase
         }
     }
 
-    protected function doPostRequest(string $endpoint, array $options = [], ?array $transform = [] ): object | null
+    protected function doPostRequest(string $endpoint, array $options = [], ?array $transform  ): object | null
     {
-        return $this->doRequest('POST', $endpoint, $options, $transform);
+        return $this->doRequest('POST', $endpoint, $options, $transform ?? []);
     }
     
-    protected function doDeleteRequest(string $endpoint, array $options = [], ?array $transform = []): object | null
+    protected function doDeleteRequest(string $endpoint, array $options = [], ?array $transform ): object | null
     {
-        return $this->doRequest('DELETE', $endpoint, $options, $transform);
+        return $this->doRequest('DELETE', $endpoint, $options, $transform ?? []);
     }
     
-    protected function doPutRequest(string $endpoint, array $options = [], ?array $transform = []): object | null
+    protected function doPutRequest(string $endpoint, array $options = [], ?array $transform): object | null
     {
-        return $this->doRequest('PUT', $endpoint, $options, $transform);
+        return $this->doRequest('PUT', $endpoint, $options, $transform ?? []);
     }
 
-    protected function doGetRequest(string $endpoint, array $options = [], ?array $transform = []): object | null
+    protected function doGetRequest(string $endpoint, array $options = [], ?array $transform): object | null
     {
-        return $this->doRequest('GET', $endpoint, $options, $transform);
+        return $this->doRequest('GET', $endpoint, $options, $transform ?? []);
     }
 
 

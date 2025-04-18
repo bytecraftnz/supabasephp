@@ -16,13 +16,13 @@ interface AuthClient
     public function signOut(String $bearerToken): null | AuthError;
 
     
-    public function signInWithEmailAndPassword(string $email, string $password): array|object|null;
+    public function signInWithEmailAndPassword(string $email, string $password): AuthResponse | AuthError;
 
-    public function signInWithRefreshToken(string $refreshToken): array|object|null;
+    public function signInWithRefreshToken(string $refreshToken): AuthResponse | AuthError;
     
-    public function signInMagicLink(string $email): array|object|null;
+    public function signInMagicLink(string $email): AuthResponse | AuthError;
 
-    public function signInWithSMSOTP(string $phone) : array|object|null;
+    public function signInWithSMSOTP(string $phone) : AuthResponse | AuthError;
     
     public function verifyOtpViaPhone ( String $otp, String $token );
     

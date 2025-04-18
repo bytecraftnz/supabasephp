@@ -23,14 +23,14 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $password The user password
      * @return array|object|null
      */    
-    public function signInWithEmailAndPassword(string $email, string $password):array|object|null 
+    public function signInWithEmailAndPassword(string $email, string $password): AuthResponse | AuthError
     {        
         $fields = [
             'email' => $email,
             'password' => $password
         ];
 
-        $user = $this->doPostRequest('token?grant_type=password', $fields, null);
+        $user = $this->doPostRequest('token?grant_type=password', $fields, $this->authTranformerCallable);
 
 
         return AuthResponse::fromObject($user);
@@ -58,13 +58,13 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $phone The user phone number
      * @return array|object|null
      */
-    public function signInWithSMSOTP(string $phone): array|object|null
+    public function signInWithSMSOTP(string $phone): AuthResponse | AuthError
     {
         throw new \Exception("Not implemented");
         $fields = [
             'phone' => $phone
         ];
-        return $this->doPostRequest('otp', $fields , null);
+        return $this->doPostRequest('otp', $fields , $this->authTranformerCallable);
     }
 
     /**
@@ -73,13 +73,13 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $email The user email
      * @return array|object|null
      */    
-    public function signInMagicLink(string $email): array|object|null
+    public function signInMagicLink(string $email): AuthResponse | AuthError
     {
         throw new \Exception("Not implemented");
         $fields = [
             'email' => $email
         ];
-        return $this->doPostRequest('magiclink', $fields , null);
+        return $this->doPostRequest('magiclink', $fields , $this->authTranformerCallable);
     }
 
     /**
@@ -160,7 +160,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
         ];
-        
+
         return $this->doPostRequest('logout', $options, null);
     }
 
