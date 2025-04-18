@@ -7,9 +7,13 @@ use Bytecraftnz\SupabasePhp\Models\AuthError;
 final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Contracts\AuthClient
 {
 
+    
+    private $authTranformerCallable;
+
     public function __construct(string $url, string $key)
     {
         parent::__construct($url, $key);
+        $this->authTranformerCallable = [$this, 'authReponseTransform'];
     }
 
     /**
@@ -26,7 +30,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             'password' => $password
         ];
 
-        $user = $this->doPostRequest('token?grant_type=password', ['body' => $fields], null);
+        $user = $this->doPostRequest('token?grant_type=password', $fields, null);
 
 
         return AuthResponse::fromObject($user);
@@ -39,12 +43,13 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $refreshToken The refresh token
      * @return void
      */    
-    public function signInWithRefreshToken(string $refreshToken) : array|object|null
+    public function signInWithRefreshToken(string $refreshToken) : AuthResponse | AuthError
     {
         $fields = [
             'refresh_token' => $refreshToken
         ];
-        return $this->doPostRequest('token?grant_type=refresh_token', $fields, null);
+        
+        return $this->doPostRequest('token?grant_type=refresh_token', $fields, $this->authTranformerCallable);
     }
 
     /**
@@ -265,5 +270,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
     
     }
 
+    private function authReponseTransform($user)
+    {
+        return AuthResponse::fromObject($user);
+    }
 
 }

@@ -71,19 +71,16 @@ abstract class Supabase
         $headers = $this->getHeaders();
         if (isset($options['headers'])) {
             $headers = array_merge($headers, $options['headers']);
+            unset($options['headers']);
         }
-        $body = null;
-        if (isset($options['body'])) {
-            $body = json_encode($options['body']);
-        }
-
+        
         try{
             $response = $this->httpClient->request(
                 $method,
                 $url,
                 [
                     'headers' => $headers,
-                    'body' => $body,
+                    'body' => json_encode($options)
                 ]
             );
 
@@ -111,7 +108,7 @@ abstract class Supabase
         }
     }
 
-    protected function doPostRequest(string $endpoint, array $options = [], ?\Closure $transform ): object
+    protected function doPostRequest(string $endpoint, array $options = [], ?Callable $transform ): object
     {
         return $this->doRequest('POST', $endpoint, $options, $transform);
     }
