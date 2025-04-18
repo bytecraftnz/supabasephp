@@ -154,12 +154,13 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $bearerUserToken The bearer token (from in sign in process)
      * @return array|object|null
      */    
-    public function signOut(String $bearerToken)
+    public function signOut(String $bearerToken): null | AuthError
     {
 
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
         ];
+        
         return $this->doPostRequest('logout', $options, null);
     }
 

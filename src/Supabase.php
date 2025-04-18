@@ -66,7 +66,7 @@ abstract class Supabase
         return $this->url .'/'. self::baseRoutePath . '/' . ltrim($endpoint, '/');
     }
 
-    protected function doRequest(string $method, string $endpoint, array $options = [], array $transform = []): array|object|null
+    protected function doRequest(string $method, string $endpoint, array $options = [], array $transform): object|null
     {
 
         $url = $this->buildUrl($endpoint);
@@ -88,7 +88,7 @@ abstract class Supabase
 
             $responseObject = json_decode($response->getBody());
 
-            return isEmpty($transform) ? $transform($responseObject) : $responseObject ;
+            return count($transform) == 2? $transform($responseObject) : $responseObject ;
         } catch(\GuzzleHttp\Exception\RequestException $e){
             $this->extractErrorFromRequestException($e);
             return new AuthError(

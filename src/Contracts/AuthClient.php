@@ -11,8 +11,11 @@ interface AuthClient
 
     public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError;
 
-    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): array|object|null;
+    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): AuthResponse | AuthError;
 
+    public function signOut(String $bearerToken): null | AuthError;
+
+    
     public function signInWithEmailAndPassword(string $email, string $password): array|object|null;
 
     public function signInWithRefreshToken(string $refreshToken): array|object|null;
@@ -25,7 +28,7 @@ interface AuthClient
     
     public function verifyOtpViaEmail ( String $otp, String $token );
 
-    public function signOut(String $bearerToken);
+    
 
     public function resetPasswordForEmail ( String $email ): array|object|null; 
 
