@@ -2,7 +2,7 @@
 namespace Bytecraftnz\SupabasePhp;
 
 use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
-use Illuminate\Container\Attributes\Auth;
+use Bytecraftnz\SupabasePhp\Models\AuthError;
 
 final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Contracts\AuthClient
 {
@@ -85,7 +85,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param array $data Additional data to be sent stored as user metadata
      * @return array|object|null
      */
-    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse 
+    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError
     {
         // Implement sign-up logic here
         $fields = [

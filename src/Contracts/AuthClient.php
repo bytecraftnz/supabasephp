@@ -2,13 +2,14 @@
 
 namespace Bytecraftnz\SupabasePhp\Contracts;
 
+use Bytecraftnz\SupabasePhp\Models\AuthError;
 use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
 
 interface AuthClient
 {
 
 
-    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse;
+    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError;
 
 public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): array|object|null;
 
