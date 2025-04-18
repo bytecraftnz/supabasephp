@@ -10,12 +10,20 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
      */
     protected $serviceKey;
     
+    /**
+     * @var string
+     */
+    protected const adminRoutePath = '/admin';
+
     public function __construct(string $url, string $key,  string $serviceKey)
     {    
         parent::__construct($url, $key);
         $this->serviceKey = $this->serviceKey;
     }
 
+    /**
+     * @return array
+     */
     protected function getHeaders(): array
     {
         return array_merge(parent::getHeaders(), [
@@ -23,53 +31,162 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
         ]);
     }
 
+    /**
+     * Get user by id
+     * @param string $id
+     * @return array|object|null
+     */
     public function getUserById(string $id): array|object|null
     {
-        // Implement getUserById logic here
-        throw new \Exception("Not implemented");
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users/' . $id);
+
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => null,
+        ];
+
+        return $this->doGetRequest($endPoint, $options);
+
     }
 
-    public function deleteUser(string $id): array|object|null
+    public function deleteUser(string $id, bool $softdelete = false): array|object|null
     {
-        // Implement deleteUser logic here
-        throw new \Exception("Not implemented");
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users/' . $id);
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => json_encode([
+                'should_soft_delete' => $softdelete
+            ]),
+        ];
+        return $this->doDeleteRequest($endPoint, $options);
     }
     
-    public function listUsers(): array|object|null
+    public function listUsers(int $page = 1, int $per_page = 5): array|object|null
     {
-        // Implement listUsers logic here
-        throw new \Exception("Not implemented");
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users');
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => null,
+            'query' => [
+                'page' => $page,
+                'per_page' => $per_page
+            ]
+        ];
+        return $this->doGetRequest($endPoint, $options);
     }
 
     public function createUser(String $email, String $password, array $data = []): array|object|null
     {
-        // Implement createUser logic here
-        throw new \Exception("Not implemented");
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users');
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => json_encode([
+                'email' => $email,
+                'password' => $password,
+                'data' => $data
+            ]),
+        ];
+        return $this->doPostRequest($endPoint, $options);
     }
 
-    public function inviteUserByEmail(string $email): array|object|null
+    public function inviteUserByEmail(string $email, array $options): array|object|null
     {
-        // Implement inviteUserByEmail logic here
-        throw new \Exception("Not implemented");
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => json_encode([
+                'email' => $email,
+                'data' => $options['data'] ?? null,                
+            ]),
+            'redirectTo' => $options['redirect_to'] ?? null,
+        ];
+
+        $endPoint = $this->buildEndpoint( '/invite' );
+        return $this->doPostRequest($endPoint, $options);
     }
 
-    public function generateLink(String $type, String $email, String $password):array|object|null
+    public function generateSignUpLink(String $email, String $password, string $redirect_to): array|object|null
     {
-        // Implement generateLink logic here
-        throw new \Exception("Not implemented");
+        $options = [
+            'email' => $email,
+            'password' => $password,
+            'redirect_to' => $redirect_to,
+        ];
+
+        return $this->generateLink($options);
     }
+    
+    public function generateMagicLinkLink(String $email, string $redirect_to): array|object|null
+    {
+        $options = [
+            'email' => $email,
+            'redirect_to' => $data['redirect_to'] ?? null,
+        ];
+        return $this->generateLink($options);
+    }
+    
+    public function generateInviteLink( String $email, string $redirect_to): array|object|null
+    {
+        $options = [
+            'email' => $email,
+            'redirect_to' => $redirect_to,
+        ];
+        return $this->generateLink($options);
+    }
+
+    public function generateRecoveryLink(String $email, string $redirect_to): array|object|null
+    {
+        $options = [
+            'email' => $email,
+            'redirect_to' => $redirect_to,
+        ];
+        return $this->generateLink($options);
+    }
+    
+    public function generateEmailChangeLink(String $email, String $newEmail, string $redirect_to): array|object|null
+    {
+        $options = [
+            'email' => $email,
+            'new_email' => $newEmail,
+            'redirect_to' => $redirect_to,
+        ];
+        return $this->generateLink($options);
+    }
+
 
     public function updateUserById(string $id, array $data): array|object|null
     {
-        // Implement updateUserById logic here
-        throw new \Exception("Not implemented");
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => json_encode([
+                'data' => $data,                
+            ]),
+        ];
+
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users/' . $id);
+        return $this->doPutRequest($endPoint, $options);
     }
 
-    public function deleteFactor(string $id, string $factorId): array|object|null
+
+    private function buildEndpoint(string $endpoint): string
     {
-        // Implement deleteFactor logic here
-        throw new \Exception("Not implemented");
+        return self::baseRoutePath .  $endpoint;
     }
 
+
+    private function generateLink(array $options):array|object|null
+    {
+        $endPoint = $this->buildEndpoint( self::adminRoutePath .'/generate_link');
+
+        $redirectTo = $options['redirect_to'] ?? null;
+        unset($options['redirect_to']);
+
+        $options = [
+            'headers' => $this->getHeaders(),
+            'body' => json_encode($options),
+            'redirectTo' => $redirectTo ,
+        ];
+        return $this->doPostRequest($endPoint, $options);
+        
+    }
 
 }

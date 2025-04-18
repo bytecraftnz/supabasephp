@@ -85,6 +85,7 @@ abstract class Supabase
             );
             return json_decode($response->getBody());
         } catch(\GuzzleHttp\Exception\RequestException $e){
+            $e->getCode();
             $this->extractErrorFromRequestException($e);
             throw $e;
         } catch(\GuzzleHttp\Exception\ConnectException $e){
