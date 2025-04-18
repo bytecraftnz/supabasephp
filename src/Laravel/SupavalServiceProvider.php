@@ -14,7 +14,7 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/supabase.php' => $this->app->configPath('supabase.php'),
+            __DIR__.'/../config/supaval.php' => $this->app->configPath('supaval.php'),
         ], 'supaval');
 
         $this->registerClass();
@@ -52,7 +52,7 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
             );
         });
 
-        
+
     }
 
 }
