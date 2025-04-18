@@ -30,10 +30,8 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             'password' => $password
         ];
 
-        $user = $this->doPostRequest('token?grant_type=password', $fields, $this->authTranformerCallable);
+        return $this->doPostRequest('token?grant_type=password', $fields, $this->authTranformerCallable);
 
-
-        return AuthResponse::fromObject($user);
     }
 
 
