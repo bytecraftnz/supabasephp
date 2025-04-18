@@ -148,6 +148,11 @@ abstract class Supabase
         return $this->error;
     }
 
+    public function isError($o):bool
+    {
+        return $o instanceof AuthError;
+    }
+
     public static function createAuthClient(string $url, string $key): \Bytecraftnz\SupabasePhp\Contracts\AuthClient
     {
         return new \Bytecraftnz\SupabasePhp\AuthClient($url, $key);

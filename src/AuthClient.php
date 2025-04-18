@@ -64,7 +64,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $fields = [
             'phone' => $phone
         ];
-        return $this->doPostRequest('otp', ['body' => $fields], null);
+        return $this->doPostRequest('otp', $fields , null);
     }
 
     /**
@@ -79,7 +79,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $fields = [
             'email' => $email
         ];
-        return $this->doPostRequest('magiclink', ['body' => $fields], null);
+        return $this->doPostRequest('magiclink', $fields , null);
     }
 
     /**
@@ -100,9 +100,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', ['body' => $fields], function($user){
-            return AuthResponse::fromObject($user);
-        });
+        return $this->doPostRequest('signup', $fields , $this->authTranformerCallable);
     }
 
     /**
@@ -122,7 +120,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', ['body' => $fields], null);
+        return $this->doPostRequest('signup', $fields , null);
     }
 
     /**
@@ -265,12 +263,12 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             $type => $otp
         ];
         
-        return $this->doPostRequest('verify', ['body' => $fields], null);
+        return $this->doPostRequest('verify', $fields , null);
 		// Implement verifyOtp logic here
     
     }
 
-    private function authReponseTransform($user)
+    protected function authReponseTransform($user)
     {
         return AuthResponse::fromObject($user);
     }
