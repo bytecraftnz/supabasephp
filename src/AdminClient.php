@@ -44,7 +44,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
             'body' => null,
         ];
 
-        return $this->doGetRequest($endPoint, $options);
+        return $this->doGetRequest($endPoint, $options, null);
 
     }
 
@@ -57,7 +57,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
                 'should_soft_delete' => $softdelete
             ]),
         ];
-        return $this->doDeleteRequest($endPoint, $options);
+        return $this->doDeleteRequest($endPoint, $options, null);
     }
     
     public function listUsers(int $page = 1, int $per_page = 5): array|object|null
@@ -71,7 +71,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
                 'per_page' => $per_page
             ]
         ];
-        return $this->doGetRequest($endPoint, $options);
+        return $this->doGetRequest($endPoint, $options, null);
     }
 
     public function createUser(String $email, String $password, array $data = []): array|object|null
@@ -85,7 +85,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
                 'data' => $data
             ]),
         ];
-        return $this->doPostRequest($endPoint, $options);
+        return $this->doPostRequest($endPoint, $options, null);
     }
 
     public function inviteUserByEmail(string $email, array $options): array|object|null
@@ -100,7 +100,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
         ];
 
         $endPoint = $this->buildEndpoint( '/invite' );
-        return $this->doPostRequest($endPoint, $options);
+        return $this->doPostRequest($endPoint, $options, null);
     }
 
     public function generateSignUpLink(String $email, String $password, string $redirect_to): array|object|null
@@ -162,7 +162,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
         ];
 
         $endPoint = $this->buildEndpoint( self::adminRoutePath .'/users/' . $id);
-        return $this->doPutRequest($endPoint, $options);
+        return $this->doPutRequest($endPoint, $options, null);
     }
 
 
@@ -184,7 +184,7 @@ final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Con
             'body' => json_encode($options),
             'redirectTo' => $redirectTo ,
         ];
-        return $this->doPostRequest($endPoint, $options);
+        return $this->doPostRequest($endPoint, $options, null);
         
     }
 

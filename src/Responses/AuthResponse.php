@@ -17,18 +17,11 @@ class AuthResponse
 
     private User $user;
 
-    private ?AuthError $authError;
 
     public function __construct(
-        private object $data
+        object $data
     ) {
-        $this->authError = null;
 
-        if(isset($data->error)) {
-            $this->authError = new AuthError($data->error);
-        } 
-
-        
         $this->accessToken = $data->access_token ?? '';
         $this->tokenType = $data->token_type ?? '';
         $this->expiresIn = $data->expires_in ?? 0;

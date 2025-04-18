@@ -1,6 +1,9 @@
 <?php
 
 namespace Bytecraftnz\SupabasePhp;
+
+use Bytecraftnz\SupabasePhp\Models\AuthError;
+
 abstract class Supabase
 {
 
@@ -61,7 +64,7 @@ abstract class Supabase
         return $this->url .'/'. self::baseRoutePath . '/' . ltrim($endpoint, '/');
     }
 
-    protected function doRequest(string $method, string $endpoint, array $options = []): array|object|null
+    protected function doRequest(string $method, string $endpoint, array $options = [], \Closure $transform): array|object|null
     {
 
         $url = $this->buildUrl($endpoint);
@@ -73,7 +76,6 @@ abstract class Supabase
         if (isset($options['body'])) {
             $body = json_encode($options['body']);
         }
-        // Implement doRequest logic here
 
         try{
             $response = $this->httpClient->request(
@@ -84,35 +86,49 @@ abstract class Supabase
                     'body' => $body,
                 ]
             );
-            return json_decode($response->getBody());
+
+            $responseObject = json_decode($response->getBody());
+
+            return $transform != null ? $transform($responseObject) : $responseObject ;
         } catch(\GuzzleHttp\Exception\RequestException $e){
-            $e->getCode();
             $this->extractErrorFromRequestException($e);
-            throw $e;
+            return new AuthError(
+                [
+                    'message' => $this->getError(),
+                    'code' => $e->getCode(),
+                    'status' => $e->getResponse()->getStatusCode()
+                ]
+            );
         } catch(\GuzzleHttp\Exception\ConnectException $e){
             $this->error = $e->getMessage();
-            throw $e;
+            return new AuthError(
+                [
+                    'message' => $this->error,
+                    'code' => $e->getCode(),
+                    'status' => 'Connection Error'
+                ]
+            );
         }
     }
 
-    protected function doPostRequest(string $endpoint, array $options = []): array|object|null
+    protected function doPostRequest(string $endpoint, array $options = [], ?\Closure $transform ): object
     {
-        return $this->doRequest('POST', $endpoint, $options);
+        return $this->doRequest('POST', $endpoint, $options, $transform);
     }
     
-    protected function doDeleteRequest(string $endpoint, array $options = []): array|object|null
+    protected function doDeleteRequest(string $endpoint, array $options = [], ?\Closure $transform): object
     {
-        return $this->doRequest('DELETE', $endpoint, $options);
+        return $this->doRequest('DELETE', $endpoint, $options, $transform);
     }
     
-    protected function doPutRequest(string $endpoint, array $options = []): array|object|null
+    protected function doPutRequest(string $endpoint, array $options = [], ?\Closure $transform): object
     {
-        return $this->doRequest('PUT', $endpoint, $options);
+        return $this->doRequest('PUT', $endpoint, $options, $transform);
     }
 
-    protected function doGetRequest(string $endpoint, array $options = []): array|object|null
+    protected function doGetRequest(string $endpoint, array $options = [], ?\Closure $transform): object
     {
-        return $this->doRequest('GET', $endpoint, $options);
+        return $this->doRequest('GET', $endpoint, $options, $transform);
     }
 
 

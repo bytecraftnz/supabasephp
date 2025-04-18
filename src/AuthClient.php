@@ -26,7 +26,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             'password' => $password
         ];
 
-        $user = $this->doPostRequest('token?grant_type=password', ['body' => $fields]);
+        $user = $this->doPostRequest('token?grant_type=password', ['body' => $fields], null);
 
 
         return AuthResponse::fromObject($user);
@@ -44,7 +44,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $fields = [
             'refresh_token' => $refreshToken
         ];
-        return $this->doPostRequest('token?grant_type=refresh_token', $fields);
+        return $this->doPostRequest('token?grant_type=refresh_token', $fields, null);
     }
 
     /**
@@ -59,7 +59,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $fields = [
             'phone' => $phone
         ];
-        return $this->doPostRequest('otp', ['body' => $fields]);
+        return $this->doPostRequest('otp', ['body' => $fields], null);
     }
 
     /**
@@ -74,7 +74,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $fields = [
             'email' => $email
         ];
-        return $this->doPostRequest('magiclink', ['body' => $fields]);
+        return $this->doPostRequest('magiclink', ['body' => $fields], null);
     }
 
     /**
@@ -85,7 +85,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param array $data Additional data to be sent stored as user metadata
      * @return array|object|null
      */
-    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse
+    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse 
     {
         // Implement sign-up logic here
         $fields = [
@@ -95,7 +95,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', ['body' => $fields]);
+        return $this->doPostRequest('token?grant_type=password', ['body' => $fields], function($user){
+            return AuthResponse::fromObject($user);
+        });
     }
 
     /**
@@ -115,7 +117,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('token?grant_type=password', ['body' => $fields]);
+        return $this->doPostRequest('token?grant_type=password', ['body' => $fields], null);
     }
 
     /**
@@ -155,7 +157,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
         ];
-        return $this->doPostRequest('logout', $options);
+        return $this->doPostRequest('logout', $options, null);
     }
 
     /**
@@ -170,7 +172,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             'email' => $email
         ];
 
-        return $this->doPostRequest('recover', $fields);
+        return $this->doPostRequest('recover', $fields, null);
     }
 
         /**
@@ -187,7 +189,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             'body' => json_encode($data)
         ];
 
-        return $this->doPutRequest('user', $options);
+        return $this->doPutRequest('user', $options, null);
 
     }
 
@@ -226,7 +228,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
         ];
-        return $this->doGetRequest('user', $options);
+        return $this->doGetRequest('user', $options, null);
 
     }
 
@@ -258,7 +260,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
             $type => $otp
         ];
         
-        return $this->doPostRequest('verify', ['body' => $fields]);
+        return $this->doPostRequest('verify', ['body' => $fields], null);
 		// Implement verifyOtp logic here
     
     }
