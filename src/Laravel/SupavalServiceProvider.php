@@ -24,7 +24,7 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/config/supaval.php', 'supaval'
+            __DIR__.'/../config/supaval.php', 'supaval'
         );
 
     }
