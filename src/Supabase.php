@@ -4,6 +4,8 @@ namespace Bytecraftnz\SupabasePhp;
 
 use Bytecraftnz\SupabasePhp\Models\AuthError;
 
+use function PHPUnit\Framework\isEmpty;
+
 abstract class Supabase
 {
 
@@ -64,7 +66,7 @@ abstract class Supabase
         return $this->url .'/'. self::baseRoutePath . '/' . ltrim($endpoint, '/');
     }
 
-    protected function doRequest(string $method, string $endpoint, array $options = [], \Closure $transform): array|object|null
+    protected function doRequest(string $method, string $endpoint, array $options = [], array $transform = []): array|object|null
     {
 
         $url = $this->buildUrl($endpoint);
@@ -86,7 +88,7 @@ abstract class Supabase
 
             $responseObject = json_decode($response->getBody());
 
-            return $transform != null ? $transform($responseObject) : $responseObject ;
+            return isEmpty($transform) ? $transform($responseObject) : $responseObject ;
         } catch(\GuzzleHttp\Exception\RequestException $e){
             $this->extractErrorFromRequestException($e);
             return new AuthError(
@@ -108,22 +110,22 @@ abstract class Supabase
         }
     }
 
-    protected function doPostRequest(string $endpoint, array $options = [], ?Callable $transform ): object
+    protected function doPostRequest(string $endpoint, array $options = [], ?array $transform ): object
     {
         return $this->doRequest('POST', $endpoint, $options, $transform);
     }
     
-    protected function doDeleteRequest(string $endpoint, array $options = [], ?\Closure $transform): object
+    protected function doDeleteRequest(string $endpoint, array $options = [], ?array $transform): object
     {
         return $this->doRequest('DELETE', $endpoint, $options, $transform);
     }
     
-    protected function doPutRequest(string $endpoint, array $options = [], ?\Closure $transform): object
+    protected function doPutRequest(string $endpoint, array $options = [], ?array $transform): object
     {
         return $this->doRequest('PUT', $endpoint, $options, $transform);
     }
 
-    protected function doGetRequest(string $endpoint, array $options = [], ?\Closure $transform): object
+    protected function doGetRequest(string $endpoint, array $options = [], ?array $transform): object
     {
         return $this->doRequest('GET', $endpoint, $options, $transform);
     }
