@@ -35,35 +35,7 @@ class GenerateLinkResponse
     }
 
 
-    public function toArray(): array
-    {
-        return [
-            'properties' => $this->properties->toArray(),
-            'user' => $this->user->toArray(),
-            'auth' => $this->auth->toArray(),
-        ];
-    }
 
-    public function toJson(): string
-    {
-        return json_encode($this->toArray());
-    }
-    
-    public function fromArray(array $data): self
-    {
-        return new self($data);
-    }
-    
-    public function fromJson(string $json): self
-    {
-        $data = json_decode($json, true);
-        return new self($data);
-    }
-
-    public function __toString(): string
-    {
-        return json_encode($this->toArray());
-    }
 
 
 }

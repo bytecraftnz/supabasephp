@@ -1,5 +1,6 @@
 <?php
 
+namespace Bytecraftnz\SupabasePhp;
 abstract class Supabase
 {
 
@@ -57,7 +58,7 @@ abstract class Supabase
     protected function buildUrl(string $endpoint): string
     {   
         
-        return rtrim($this->url, '/') . self::baseRoutePath . '/' . ltrim($endpoint, '/');
+        return $this->url .'/'. self::baseRoutePath . '/' . ltrim($endpoint, '/');
     }
 
     protected function doRequest(string $method, string $endpoint, array $options = []): array|object|null

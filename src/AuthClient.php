@@ -1,7 +1,8 @@
 <?php
 namespace Bytecraftnz\SupabasePhp;
 
-use Supabase;
+use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
+use Illuminate\Container\Attributes\Auth;
 
 final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Contracts\AuthClient
 {
@@ -18,13 +19,17 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $password The user password
      * @return array|object|null
      */    
-    public function signInWithEmailAndPassword(string $email, string $password): array|object|null
+    public function signInWithEmailAndPassword(string $email, string $password):array|object|null 
     {        
         $fields = [
             'email' => $email,
             'password' => $password
         ];
-        return $this->doPostRequest('token?grant_type=password', ['body' => $fields]);
+
+        $user = $this->doPostRequest('token?grant_type=password', ['body' => $fields]);
+
+
+        return AuthResponse::fromObject($user);
     }
 
 
@@ -80,7 +85,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param array $data Additional data to be sent stored as user metadata
      * @return array|object|null
      */
-    public function signUpWithEmailAndPassword(string $email, string $password, array $data): array|object|null
+    public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse
     {
         // Implement sign-up logic here
         $fields = [

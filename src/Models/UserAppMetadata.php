@@ -5,44 +5,25 @@ namespace Bytecraftnz\SupabasePhp\Models;
 
 class UserAppMetadata{
     private string $provider;
-    private array $data;
+    private array $providers;
 
     public function __construct(        
-        array $data
+        object $data
     ) {
-        $this->provider = $data['provider'] ?? '';
-        $this->data = $data['data'] ?? [];
+        $this->provider = $data->provider ?? '';
+        $this->providers = (array) $data->data ?? [];
     }
     public function getProvider(): string
     {
         return $this->provider;
     }
-    public function getData(): array
+    public function getProviders(): array
     {
-        return $this->data;
+        return $this->providers;
     }
-    public function toArray(): array
-    {
-        return [
-            'provider' => $this->provider,
-            'data' => $this->data,
-        ];
-    }
-    public function toJson(): string
-    {
-        return json_encode($this->toArray());
-    }
-    public function fromArray(array $data): self
+
+    public static function fromObject(object $data): self
     {
         return new self($data);
-    }
-    public function fromJson(string $json): self
-    {
-        $data = json_decode($json, true);
-        return new self($data);
-    }
-    public function __toString(): string
-    {
-        return json_encode($this->toArray());
-    }
+    }   
 }

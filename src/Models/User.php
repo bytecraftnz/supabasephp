@@ -8,7 +8,7 @@ use Bytecraftnz\SupabasePhp\Models\UserMetadata;
 class User{
     private string $id;
     private UserAppMetadata $app_metadata;
-    private array $user_metadata;
+    private UserMetadata $user_metadata;
     private string $aud;
     private string $confirmation_sent_at;
     private string $recovery_sent_at;
@@ -33,28 +33,33 @@ class User{
 
 
     public function __construct(
-        array $data
+        object $data
     ) {
-        $this->id = $data['id'] ?? '';
-        $this->app_metadata = new UserAppMetadata($data['app_metadata'] ?? []);
-        $this->user_metadata = $data['user_metadata'] ?? [];
-        $this->aud = $data['aud'] ?? '';
-        $this->confirmation_sent_at = $data['confirmation_sent_at'] ?? '';
-        $this->recovery_sent_at = $data['recovery_sent_at'] ?? '';
-        $this->email_change_sent_at = $data['email_change_sent_at'] ?? '';
-        $this->new_email = $data['new_email'] ?? '';
-        $this->new_phone = $data['new_phone'] ?? '';
-        $this->invited_at = $data['invited_at'] ?? '';
-        $this->action_link = $data['action_link'] ?? '';
-        $this->email = $data['email'] ?? '';
-        $this->phone = $data['phone'] ?? '';
-        $this->created_at = $data['created_at'] ?? '';
-        $this->confirmed_at = $data['confirmed_at'] ?? '';
-        $this->email_confirmed_at = $data['email_confirmed_at'] ?? '';
-        $this->phone_confirmed_at = $data['phone_confirmed_at'] ?? '';
-        $this->last_sign_in_at = $data['last_sign_in_at'] ?? '';
-        $this->role = $data['role'] ?? '';
-        $this->updated_at = $data['updated_at'] ?? '';
+        $this->id = $data->id ?? '';
+        $this->app_metadata = UserAppMetadata::fromObject($data->app_metadata);
+        $this->user_metadata = UserMetadata::fromObject($data->user_metadata);
+        $this->aud = $data->aud ?? '';
+        $this->confirmation_sent_at = $data->confirmation_sent_at ?? '';
+        $this->recovery_sent_at = $data->recovery_sent_at ?? '';
+        $this->email_change_sent_at = $data->email_change_sent_at ?? '';
+        $this->new_email = $data->new_email ?? '';
+        $this->new_phone = $data->new_phone ?? '';
+        $this->invited_at = $data->invited_at ?? '';
+        $this->action_link = $data->action_link ?? '';
+        $this->email = $data->email ?? '';
+        $this->phone = $data->phone ?? '';
+        $this->created_at = $data->created_at ?? '';
+        $this->confirmed_at = $data->confirmed_at ?? '';
+        $this->email_confirmed_at = $data->email_confirmed_at ?? '';
+        $this->phone_confirmed_at = $data->phone_confirmed_at ?? '';
+        $this->last_sign_in_at = $data->last_sign_in_at ?? '';
+        $this->role = $data->role ?? '';
+        $this->updated_at = $data->updated_at ?? '';
+
+        $this->identities = array_map(
+            fn($identity) => UserIdentity::fromObject($identity),
+            $data->identities ?? []
+        );
 
     }
 
@@ -66,7 +71,7 @@ class User{
     {
         return $this->app_metadata;
     }
-    public function getUserMetadata(): array
+    public function getUserMetadata(): UserMetadata
     {
         return $this->user_metadata;
     }
@@ -155,47 +160,11 @@ class User{
         return $this->factors;
     }
 
-    public function toArray(): array
+    public static function fromObject(object $user): self
     {
-        return [
-            'id' => $this->id,
-            'app_metadata' => $this->app_metadata->toArray(),
-            'user_metadata' => $this->user_metadata,
-            'aud' => $this->aud,
-            'confirmation_sent_at' => $this->confirmation_sent_at,
-            'recovery_sent_at' => $this->recovery_sent_at,
-            'email_change_sent_at' => $this->email_change_sent_at,
-            'new_email' => $this->new_email,
-            'new_phone' => $this->new_phone,
-            'invited_at' => $this->invited_at,
-            'action_link' => $this->action_link,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'created_at' => $this->created_at,
-            'confirmed_at' => $this->confirmed_at,
-            'email_confirmed_at' => $this->email_confirmed_at,
-            'phone_confirmed_at' => $this->phone_confirmed_at,
-            'last_sign_in_at' => $this->last_sign_in_at,
-            'role' => $this->role,
-            'updated_at' => $this->updated_at,
-        ];
+        return new self(
+            $user
+        );
     }
-    public function toJson(): string
-    {
-        return json_encode($this->toArray());
-    }
-    public function fromArray(array $data): self
-    {
-        return new self($data);
-    }
-    public function fromJson(string $json): self
-    {
-        $data = json_decode($json, true);
-        return new self($data);
-    }
-    public function __toString(): string
-    {
-        return json_encode($this->toArray());
-    }
-
+    
 }

@@ -1,7 +1,6 @@
 <?php
 namespace Bytecraftnz\SupabasePhp;
 
-use Supabase;
 
 final class AdminClient extends Supabase implements \Bytecraftnz\SupabasePhp\Contracts\AdminClient
 {
