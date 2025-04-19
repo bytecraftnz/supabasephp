@@ -15,22 +15,17 @@ interface AuthClient
 
     public function signOut(String $bearerToken): null | AuthError;
 
-    
     public function signInWithEmailAndPassword(string $email, string $password): AuthResponse | AuthError;
 
     public function signInWithRefreshToken(string $refreshToken): AuthResponse | AuthError;
-    
-    public function signInMagicLink(string $email): AuthResponse | AuthError;
 
-    public function signInWithSMSOTP(string $phone) : AuthResponse | AuthError;
+    public function verifyOtpViaPhone ( String $otp, String $token ): AuthResponse | AuthError;
     
-    public function verifyOtpViaPhone ( String $otp, String $token );
-    
-    public function verifyOtpViaEmail ( String $otp, String $token );
+    public function verifyOtpViaEmail ( String $otp, String $token ): AuthResponse | AuthError;
 
     
 
-    public function resetPasswordForEmail ( String $email ): array|object|null; 
+    public function resetPasswordForEmail ( String $email, array $options ): array|object|null; 
 
     public function getUser(string $bearerUserToken): array|object|null;
 
@@ -42,6 +37,11 @@ interface AuthClient
     
     public function isAuthenticated(string $bearerUserToken) : bool;
 
+
+    public function signInMagicLink(string $email): AuthResponse | AuthError;
+
+    public function signInWithSMSOTP(string $phone) : AuthError | null;
+    
     public function isError($o):bool;
     public function getError(): string;
 }

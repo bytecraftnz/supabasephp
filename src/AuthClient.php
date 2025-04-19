@@ -56,7 +56,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $phone The user phone number
      * @return array|object|null
      */
-    public function signInWithSMSOTP(string $phone): AuthResponse | AuthError
+    public function signInWithSMSOTP(string $phone): AuthError | null
     {
         throw new \Exception("Not implemented");
         $fields = [
@@ -109,7 +109,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param array $data Additional data to be sent stored as user metadata
      * @return void
      */
-    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []):AuthResponse | AuthError
+    public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): AuthResponse | AuthError
     {
         $fields = [
             'phone' => $phone,
@@ -128,7 +128,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $token The token received in the OTP process
      * @return array|object|null
      */
-    public function verifyOtpViaPhone(String $otp, String $token)
+    public function verifyOtpViaPhone(String $otp, String $token):AuthResponse | AuthError
     {
         return $this->verifyOtp('phone',$otp, $token);
     }
@@ -140,7 +140,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $token The token received in the OTP process
      * @return array|object|null
      */    
-    public function verifyOtpViaEmail(String $otp, String $token)
+    public function verifyOtpViaEmail(String $otp, String $token): AuthResponse | AuthError
     {
         return $this->verifyOtp('email', $otp,  $token);
     }
@@ -168,10 +168,11 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $email The user email
      * @return array|object|null
      */
-    public function resetPasswordForEmail(string $email): array|object|null
+    public function resetPasswordForEmail(string $email, array $options): null
     {
         $fields = [
-            'email' => $email
+            'email' => $email,
+            'redirect_to' => $options['redirectTo'] ?? null
         ];
 
         return $this->doPostRequest('recover', $fields, null);
@@ -254,7 +255,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $token The token received in the OTP process
      * @return array|object|null
      */
-    private function verifyOtp(String $type, String $otp, String $token)
+    private function verifyOtp(String $type, String $otp, String $token):AuthResponse | AuthError
     {
         $fields = [
             'type' => $type,
@@ -263,8 +264,6 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         ];
         
         return $this->doPostRequest('verify', $fields , null);
-		// Implement verifyOtp logic here
-    
     }
 
     protected function authReponseTransform($user)

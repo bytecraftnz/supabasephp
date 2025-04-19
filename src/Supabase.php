@@ -75,6 +75,12 @@ abstract class Supabase
             $headers = array_merge($headers, $options['headers']);
             unset($options['headers']);
         }
+
+        $redirectTo = null;
+
+        if (isset($options['redirect_to'])) {
+            $redirectTo = $options['redirect_to'];
+        }
         
         try{
             $response = $this->httpClient->request(
@@ -82,7 +88,8 @@ abstract class Supabase
                 $url,
                 [
                     'headers' => $headers,
-                    'body' => json_encode($options)
+                    'body' => json_encode($options),
+                    'redirectTo'=> $redirectTo,
                 ]
             );
 
