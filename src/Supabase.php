@@ -94,7 +94,11 @@ abstract class Supabase
             );
 
             $responseObject = json_decode($response->getBody());
-
+            if(isEmpty($responseObject)){
+                return null;
+            }
+            
+            return count($transform) == 2? $transform($responseObject) : $responseObject ;
             return count($transform) == 2? $transform($responseObject) : $responseObject ;
         } catch(\GuzzleHttp\Exception\RequestException $e){
             $this->extractErrorFromRequestException($e);

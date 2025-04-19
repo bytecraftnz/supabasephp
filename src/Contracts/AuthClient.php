@@ -4,11 +4,10 @@ namespace Bytecraftnz\SupabasePhp\Contracts;
 
 use Bytecraftnz\SupabasePhp\Models\AuthError;
 use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
+use Bytecraftnz\SupabasePhp\Responses\UserResponse;
 
 interface AuthClient
 {
-
-
     public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError;
 
     public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): AuthResponse | AuthError;
@@ -25,15 +24,15 @@ interface AuthClient
 
     
 
-    public function resetPasswordForEmail ( String $email, array $options ): array|object|null; 
+    public function resetPasswordForEmail ( String $email, array $options ): null | AuthError; 
 
     public function getUser(string $bearerUserToken): array|object|null;
 
-    public function updateUser( String $bearerToken, array $data =[]): array|object|null;
+    public function updateUser( String $bearerToken, array $data =[]): UserResponse | AuthError;
     
-    public function updateUserPassword( String $bearerToken, String $password ): array|object|null;
+    public function updateUserPassword( String $bearerToken, String $password ): UserResponse | AuthError;
     
-    public function updateUserEmail( String $bearerToken, String $email ): array|object|null;  
+    public function updateUserEmail( String $bearerToken, String $email ): UserResponse | AuthError; 
     
     public function isAuthenticated(string $bearerUserToken) : bool;
 

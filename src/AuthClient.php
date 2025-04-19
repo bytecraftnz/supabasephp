@@ -3,17 +3,20 @@ namespace Bytecraftnz\SupabasePhp;
 
 use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
 use Bytecraftnz\SupabasePhp\Models\AuthError;
+use Bytecraftnz\SupabasePhp\Responses\UserResponse;
 
 final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Contracts\AuthClient
 {
 
     
     private $authTranformerCallable;
+    private $userTranformerCallable;
 
     public function __construct(string $url, string $key)
     {
         parent::__construct($url, $key);
         $this->authTranformerCallable = [$this, 'authReponseTransform'];
+        $this->userTranformerCallable = [$this, 'userReponseTransform'];
     }
 
     /**
@@ -21,7 +24,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access public
      * @param string $email The user email
      * @param string $password The user password
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */    
     public function signInWithEmailAndPassword(string $email, string $password): AuthResponse | AuthError
     {        
@@ -39,7 +42,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Sign in (authenticate by refresh token)
      * @access public
      * @param string $refreshToken The refresh token
-     * @return void
+     * @return AuthResponse | AuthError
      */    
     public function signInWithRefreshToken(string $refreshToken) : AuthResponse | AuthError
     {
@@ -54,7 +57,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Sign in (authenticate by SMS OTP)
      * @access public
      * @param string $phone The user phone number
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */
     public function signInWithSMSOTP(string $phone): AuthError | null
     {
@@ -69,7 +72,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Sign in (authenticate by magic link sended to user email)
      * @access public
      * @param string $email The user email
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */    
     public function signInMagicLink(string $email): AuthResponse | AuthError
     {
@@ -86,7 +89,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $email The user email
      * @param string $password The user password
      * @param array $data Additional data to be sent stored as user metadata
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */
     public function signUpWithEmailAndPassword(string $email, string $password, array $data): AuthResponse | AuthError
     {
@@ -107,7 +110,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @param string $phone The user phone number
      * @param string $password The user password
      * @param array $data Additional data to be sent stored as user metadata
-     * @return void
+     * @return AuthResponse | AuthError
      */
     public function signUpWithPhoneAndPassword(string $phone, string $password, array $data = []): AuthResponse | AuthError
     {
@@ -126,7 +129,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access private
      * @param string $otp The OTP code
      * @param string $token The token received in the OTP process
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */
     public function verifyOtpViaPhone(String $otp, String $token):AuthResponse | AuthError
     {
@@ -138,7 +141,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access private
      * @param string $otp The OTP code
      * @param string $token The token received in the OTP process
-     * @return array|object|null
+     * @return AuthResponse | AuthError
      */    
     public function verifyOtpViaEmail(String $otp, String $token): AuthResponse | AuthError
     {
@@ -150,7 +153,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Logout
      * @access public
      * @param string $bearerUserToken The bearer token (from in sign in process)
-     * @return array|object|null
+     * @return null | AuthError
      */    
     public function signOut(String $bearerToken): null | AuthError
     {
@@ -166,9 +169,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Recover the user password (by a link sended to user email)
      * @access public
      * @param string $email The user email
-     * @return array|object|null
+     * @return null | AuthError
      */
-    public function resetPasswordForEmail(string $email, array $options): null
+    public function resetPasswordForEmail(string $email, array $options): null | AuthError
     {
         $fields = [
             'email' => $email,
@@ -183,16 +186,16 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access public
      * @param string $bearerUserToken The bearer user token (generated in sign in process)
      * @param array  $data Optional. The user meta data
-     * @return array|object|null
+     * @return UserResponse | AuthError
      */
-    public function updateUser( String $bearerToken, array $data =[]): array|object|null
+    public function updateUser( String $bearerToken, array $data =[]): UserResponse | AuthError
     {
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
             'body' => json_encode($data)
         ];
 
-        return $this->doPutRequest('user', $options, null);
+        return $this->doPutRequest('user', $options, $this->userTranformerCallable);
 
     }
 
@@ -201,9 +204,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access public
      * @param string $bearerUserToken The bearer user token (generated in sign in process)
      * @param string $password Optional. The user password
-     * @return array|object|null
+     * @return UserResponse | AuthError
      */
-    public function updateUserPassword( String $bearerToken, String $password ): array|object|null
+    public function updateUserPassword( String $bearerToken, String $password ): UserResponse | AuthError
     {
         return $this->updateUser($bearerToken, ['password' => $password]);
     }
@@ -213,9 +216,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * @access public
      * @param string $bearerUserToken The bearer user token (generated in sign in process)
      * @param string $email Optional. The user email
-     * @return array|object|null
+     * @return UserResponse | AuthError
      */    
-    public function updateUserEmail( String $bearerToken, String $email ): array|object|null
+    public function updateUserEmail( String $bearerToken, String $email ): UserResponse | AuthError
     {
         return $this->updateUser($bearerToken, ['email' => $email]);
     }    
@@ -224,9 +227,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      * Get the user data
      * @access public
      * @param string $bearerUserToken The bearer user token (generated in sign in process)
-     * @return array|object|null
+     * @return UserResponse | AuthError
      */
-    public function getUser(string $bearerToken): array|object|null
+    public function getUser(string $bearerToken): UserResponse | AuthError
     {
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
@@ -244,7 +247,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
     public function isAuthenticated(string $bearerUserToken) : bool
     {
         $user = $this->getUser($bearerUserToken);
-        return $user->aud == 'authenticated';
+        return ($user->getUser())->getAud() == 'authenticated';
     }
  
     /**
@@ -271,4 +274,8 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         return AuthResponse::fromObject($user);
     }
 
+    protected function userReponseTransform($user)
+    {
+        return UserResponse::fromObject($user);
+    }
 }
