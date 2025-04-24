@@ -16,7 +16,7 @@ class UserMetadata
         object $userMetadata
     ) {
         
-        $this->data = (array) $userMetadata->data ?? [];        
+        $this->data = (array) isset($userMetadata->data) ? $userMetadata->data : [];        
         $this->email = $userMetadata->email ?? '';
         $this->email_verified = $userMetadata->email_verified ?? false;
         $this->phone_verified = $userMetadata->phone_verified ?? false;

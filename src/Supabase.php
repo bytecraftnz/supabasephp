@@ -4,7 +4,6 @@ namespace Bytecraftnz\SupabasePhp;
 
 use Bytecraftnz\SupabasePhp\Models\AuthError;
 
-use function PHPUnit\Framework\isEmpty;
 
 abstract class Supabase
 {
@@ -100,13 +99,11 @@ abstract class Supabase
                     'redirectTo'=> $redirectTo,
                 ]
             );
-
-            $responseObject = json_decode($response->getBody());
-            if(isEmpty($responseObject)){
-                return null;
+            if($response->getBody() != null ){
+                $responseObject = json_decode($response->getBody());
+                return count($transform) == 2 ? $transform($responseObject) : $responseObject ;    
             }
-            
-            return count($transform) == 2? $transform($responseObject) : $responseObject ;
+            return null;
         } catch(\GuzzleHttp\Exception\RequestException $e){
             $this->extractErrorFromRequestException($e);
             return new AuthError(
