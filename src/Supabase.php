@@ -70,7 +70,7 @@ abstract class Supabase
 
         $url = $this->buildUrl($endpoint);
         $headers = $this->getHeaders();
-        $body = [];
+        $body = null;
         
         if (isset($options['headers'])) {
             $headers = array_merge($headers, $options['headers']);
@@ -84,7 +84,7 @@ abstract class Supabase
         }
 
         if (isset($options['body'])) {
-            $body = $options['body'];
+            $body = json_encode($options['body']);
             unset($options['body']);
         }
         
@@ -95,13 +95,13 @@ abstract class Supabase
                 $url,
                 [
                     'headers' => $headers,
-                    'body' => json_encode($body),
+                    'body' => $body,
                     'redirectTo'=> $redirectTo,
                 ]
             );
             if($response->getBody() != null ){
                 $responseObject = json_decode($response->getBody());
-                return count($transform) == 2 ? $transform($responseObject) : $responseObject ;    
+                return count($transform) == 2 ? $transform($responseObject,$body) : $responseObject ;    
             }
             return null;
         } catch(\GuzzleHttp\Exception\RequestException $e){

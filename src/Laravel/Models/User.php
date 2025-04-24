@@ -2,7 +2,6 @@
 
 namespace Bytecraftnz\SupabasePhp\Laravel\Models;
 
-use Bytecraftnz\SupabasePhp\Models\User as ModelsUser;
 use Bytecraftnz\SupabasePhp\Responses\AuthResponse;
 
 class User implements \Illuminate\Contracts\Auth\Authenticatable

@@ -6,6 +6,7 @@ use Bytecraftnz\SupabasePhp\Models\AuthError;
 use DateTime;
 use Illuminate\Support\Facades\Date;
 use Bytecraftnz\SupabasePhp\Models\User;
+use Bytecraftnz\SupabasePhp\Models\UserAccess;
 
 class AuthResponse
 {
@@ -19,7 +20,8 @@ class AuthResponse
 
 
     public function __construct(
-        object $data
+        object $data,
+        object $requestData,
     ) {
 
         $this->accessToken = $data->access_token ?? '';
@@ -28,7 +30,11 @@ class AuthResponse
         $this->expiresAt = Date::createFromTimestamp($data->expires_at ?? 0);
         $this->refreshToken = $data->refresh_token ?? '';
 
-        $this->user = User::fromObject($data->user ?? null);
+        $this->user = User::fromAuthResponse(
+            $data->user ?? null, 
+            UserAccess::fromAuthResponse($this),
+            isset($requestData->password) ? $requestData->password : '',
+        );
 
     }
 
@@ -64,9 +70,9 @@ class AuthResponse
         return $this->user;
     }
 
-    public static function fromObject(object $data): self
+    public static function fromObject(object $data, object $requestData): self
     {
-        return new self($data);
+        return new self($data, $requestData);
     }
 
 

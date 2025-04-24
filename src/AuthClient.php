@@ -283,9 +283,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         return $this->doPostRequest('verify', $fields , null);
     }
 
-    protected function authReponseTransform($user)
+    protected function authReponseTransform($user, $requestData)
     {
-        return AuthResponse::fromObject($user);
+        return AuthResponse::fromObject($user, $requestData);
     }
 
     protected function userReponseTransform($user)

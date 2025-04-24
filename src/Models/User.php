@@ -5,7 +5,8 @@ namespace Bytecraftnz\SupabasePhp\Models;
 use Bytecraftnz\SupabasePhp\Models\UserAppMetadata;
 use Bytecraftnz\SupabasePhp\Models\UserMetadata;
 
-class User{
+class User extends \Bytecraftnz\SupabasePhp\Laravel\Models\User
+{
     private string $id;
     private UserAppMetadata $app_metadata;
     private UserMetadata $user_metadata;
@@ -31,9 +32,15 @@ class User{
     private bool $is_sso_user;
     private array $factors;
 
+    private UserAccess $userAccess;
+
+
+    use \Illuminate\Auth\Authenticatable;
 
     public function __construct(
-        object $data
+        object $data,
+        UserAccess $userAccess,
+        string $password = null
     ) {
         $this->id = $data->id ?? '';
         $this->app_metadata = UserAppMetadata::fromObject($data->app_metadata);
@@ -61,6 +68,7 @@ class User{
             $data->identities ?? []
         );
 
+        $this->userAccess = $userAccess;    
     }
 
     public function getId(): string
@@ -160,10 +168,17 @@ class User{
         return $this->factors;
     }
 
-    public static function fromObject(object $user): self
+    public function getUserAccess(): UserAccess
+    {
+        return $this->userAccess;
+    }
+
+    public static function fromAuthResponse(object $user, UserAccess $userAccess, string $password): self
     {
         return new self(
-            $user
+            $user,
+            $userAccess,
+            $password
         );
     }
     
