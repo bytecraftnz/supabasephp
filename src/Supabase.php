@@ -71,6 +71,8 @@ abstract class Supabase
 
         $url = $this->buildUrl($endpoint);
         $headers = $this->getHeaders();
+        $body = [];
+        
         if (isset($options['headers'])) {
             $headers = array_merge($headers, $options['headers']);
             unset($options['headers']);
@@ -81,14 +83,20 @@ abstract class Supabase
         if (isset($options['redirect_to'])) {
             $redirectTo = $options['redirect_to'];
         }
+
+        if (isset($options['body'])) {
+            $body = $options['body'];
+            unset($options['body']);
+        }
         
+
         try{
             $response = $this->httpClient->request(
                 $method,
                 $url,
                 [
                     'headers' => $headers,
-                    'body' => json_encode($options),
+                    'body' => json_encode($body),
                     'redirectTo'=> $redirectTo,
                 ]
             );
@@ -98,7 +106,6 @@ abstract class Supabase
                 return null;
             }
             
-            return count($transform) == 2? $transform($responseObject) : $responseObject ;
             return count($transform) == 2? $transform($responseObject) : $responseObject ;
         } catch(\GuzzleHttp\Exception\RequestException $e){
             $this->extractErrorFromRequestException($e);
