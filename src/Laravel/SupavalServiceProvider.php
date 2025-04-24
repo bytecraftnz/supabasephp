@@ -2,6 +2,7 @@
 
 namespace Bytecraftnz\SupabasePhp\Laravel;
 
+use Illuminate\Support\Facades\Auth;
 
 class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -17,6 +18,11 @@ class SupavalServiceProvider extends \Illuminate\Support\ServiceProvider
         ], 'supaval');
 
         $this->registerClass();
+
+        Auth::provider('supaval', function ($app, array $_) {
+            return $app->make(SupavalUserProvider::class);
+        }); 
+
     }
 
 
