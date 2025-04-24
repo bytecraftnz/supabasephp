@@ -28,12 +28,14 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      */    
     public function signInWithEmailAndPassword(string $email, string $password): AuthResponse | AuthError
     {        
-        $fields = [
-            'email' => $email,
-            'password' => $password
+        $options = [
+            'body' => [
+                'email' => $email,
+                'password' => $password
+            ],
         ];
 
-        return $this->doPostRequest('token?grant_type=password', $fields, $this->authTranformerCallable);
+        return $this->doPostRequest('token?grant_type=password', $options, $this->authTranformerCallable);
 
     }
 
@@ -46,11 +48,13 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      */    
     public function signInWithRefreshToken(string $refreshToken) : AuthResponse | AuthError
     {
-        $fields = [
-            'refresh_token' => $refreshToken
+        $options = [
+            'body' => [
+                'refresh_token' => $refreshToken
+            ],
         ];
         
-        return $this->doPostRequest('token?grant_type=refresh_token', $fields, $this->authTranformerCallable);
+        return $this->doPostRequest('token?grant_type=refresh_token', $options, $this->authTranformerCallable);
     }
 
     /**
@@ -101,7 +105,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', $fields , $this->authTranformerCallable);
+        return $this->doPostRequest('signup', ['body' => $fields] , $this->authTranformerCallable);
     }
 
     /**
@@ -121,7 +125,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
         if(is_array($data) && count($data) > 0){
             $fields['data'] = $data;
         }
-        return $this->doPostRequest('signup', $fields , $this->authTranformerCallable);
+        return $this->doPostRequest('signup', ['body' => $fields ] , $this->authTranformerCallable);
     }
 
     /**
@@ -174,7 +178,9 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
     public function resetPasswordForEmail(string $email, array $options): null | AuthError
     {
         $fields = [
-            'email' => $email,
+            'body' => [
+                'email' => $email,
+            ],
             'redirect_to' => $options['redirectTo'] ?? null
         ];
 
@@ -190,9 +196,15 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      */
     public function updateUser( String $bearerToken, array $data =[]): UserResponse | AuthError
     {
+        if(isset($data['data'])){
+            $data['data'] = [
+                'data' => $data['data']
+            ];
+        }
+
         $options = [
             'headers' => $this->getHeadersWithBearer($bearerToken),
-            'body' => json_encode($data)
+            'body' => $data
         ];
 
         return $this->doPutRequest('user', $options, $this->userTranformerCallable);
@@ -208,7 +220,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      */
     public function updateUserPassword( String $bearerToken, String $password ): UserResponse | AuthError
     {
-        return $this->updateUser($bearerToken, ['password' => $password]);
+        return $this->updateUser($bearerToken, ['body' => ['password' => $password]]);
     }
 
     /**
@@ -220,7 +232,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
      */    
     public function updateUserEmail( String $bearerToken, String $email ): UserResponse | AuthError
     {
-        return $this->updateUser($bearerToken, ['email' => $email]);
+        return $this->updateUser($bearerToken, ['body' => ['email' => $email]]);
     }    
 
     /**
@@ -261,9 +273,11 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
     private function verifyOtp(String $type, String $otp, String $token):AuthResponse | AuthError
     {
         $fields = [
-            'type' => $type,
-            'token' => $token,
-            $type => $otp
+            'body' => [
+                'type' => $type,
+                'token' => $token,
+                $type => $otp
+            ],
         ];
         
         return $this->doPostRequest('verify', $fields , null);
@@ -276,6 +290,7 @@ final class AuthClient extends Supabase implements \Bytecraftnz\SupabasePhp\Cont
 
     protected function userReponseTransform($user)
     {
+        dd($user);
         return UserResponse::fromObject($user);
     }
 }
